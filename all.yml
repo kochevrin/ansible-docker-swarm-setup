@@ -1,0 +1,63 @@
+---
+- name: Root server
+  hosts: root_manager
+  remote_user: "{{ remote_user }}"
+  become: true
+  roles:
+    - role: preconfig
+      tags:
+        - preconfig
+    - role: install_docker
+      tags:
+        - install_docker
+    - role: swarm_cluster_setup
+      tags:
+        - swarm_cluster_setup
+    - role: add_docker_registry
+      tags:
+        - add_docker_registry
+    - role: build
+      tags:
+        - build
+    - role: deploy_app
+      tags:
+        - deploy_app
+    # - role: swarm_cluster_destroy
+    #   tags:
+    #     - swarm_cluster_destroy
+
+- name: Manager servers
+  hosts: managers
+  remote_user: "{{ remote_user }}"
+  become: true
+  roles:
+    - role: preconfig
+      tags:
+        - preconfig
+    - role: install_docker
+      tags:
+        - install_docker
+    - role: swarm_cluster_setup
+      tags:
+        - swarm_cluster_setup
+    - role: swarm_cluster_destroy
+      tags:
+        - swarm_cluster_destroy
+
+- name: Worker servers
+  hosts: workers
+  remote_user: "{{ remote_user }}"
+  become: true
+  roles:
+    - role: preconfig
+      tags:
+        - preconfig
+    - role: install_docker
+      tags:
+        - install_docker
+    - role: swarm_cluster_setup
+      tags:
+        - swarm_cluster_setup
+    - role: swarm_cluster_destroy
+      tags:
+        - swarm_cluster_destroy

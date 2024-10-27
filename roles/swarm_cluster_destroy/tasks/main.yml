@@ -1,0 +1,11 @@
+---
+- name: Leave Docker Swarm Cluster
+  block:
+    - name: Include tasks to leave root manager
+      ansible.builtin.include_tasks: leave_root_manager.yml
+
+    - name: Include tasks to leave managers
+      ansible.builtin.include_tasks: leave_managers.yml
+
+    - name: Include tasks to leave workers
+      ansible.builtin.include_tasks: leave_workers.yml

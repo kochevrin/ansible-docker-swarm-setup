@@ -1,0 +1,14 @@
+---
+- name: "Deploy service [{{ service_name }}]"
+  block:
+    - name: "Deploy [{{ service_name }}] service"
+      community.docker.docker_swarm_service:
+        name: "{{ service_name }}"
+        image: "rabbitmq:{{ version }}"
+        state: present
+        networks:
+          - name: "{{ network_name }}"
+        env:
+          - RABBITMQ_DEFAULT_USER={{ rmq.user }}
+          - RABBITMQ_DEFAULT_PASS={{ rmq.password }}
+  # tags: "{{ service_name }}"

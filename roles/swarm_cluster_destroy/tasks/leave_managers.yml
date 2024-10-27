@@ -1,0 +1,6 @@
+---
+- name: Remove workers from Docker Swarm
+  community.docker.docker_swarm:
+    state: absent
+    force: true
+  when: inventory_hostname in groups['managers']

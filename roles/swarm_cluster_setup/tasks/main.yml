@@ -1,0 +1,29 @@
+---
+- name: Initialize Docker Swarm and Join Nodes
+  when: ansible_facts['distribution'] == 'Ubuntu'
+  block:
+    # Initialize Docker Swarm on the first root manager and retrieve the tokens
+    - name: Initialize Docker Swarm on root manager
+      community.docker.docker_swarm:
+        state: present
+      register: swarm_status
+      changed_when: false
+      when: inventory_hostname in groups['root_manager']
+
+    # Join the remaining managers to the swarm using the manager join token
+    - name: Join other managers to Docker Swarm
+      community.docker.docker_swarm:
+        state: join
+        timeout: 60
+        join_token: "{{ hostvars[groups['root_manager'][0]].swarm_status['swarm_facts']['JoinTokens']['Manager'] }}"
+        remote_addrs: "{{ hostvars[groups['root_manager'][0]]['ansible_default_ipv4']['address'] }}:2377"
+      when: inventory_hostname in groups['managers'] and inventory_hostname not in groups['root_manager']
+
+    # Join worker nodes to the swarm using the worker join token
+    - name: Join worker nodes to Docker Swarm
+      community.docker.docker_swarm:
+        state: join
+        timeout: 60
+        join_token: "{{ hostvars[groups['root_manager'][0]].swarm_status['swarm_facts']['JoinTokens']['Worker'] }}"
+        remote_addrs: "{{ hostvars[groups['root_manager'][0]]['ansible_default_ipv4']['address'] }}:2377"
+      when: inventory_hostname in groups['workers']

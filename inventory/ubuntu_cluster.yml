@@ -1,0 +1,32 @@
+all:
+  vars:
+    ansible_user: "{{ vault_ansible_user }}"  # Переменная пользователя из vault.yml
+  children:
+    root_manager:
+      hosts:
+        ubuntu-node01:
+          ansible_host: 192.168.123.1
+          ansible_port: 22
+          ansible_python_interpreter: /usr/bin/python3
+
+    managers:
+      hosts:
+        ubuntu-node02:
+          ansible_host: 192.168.123.2
+          ansible_port: 22
+          ansible_python_interpreter: /usr/bin/python3
+        ubuntu-node03:
+          ansible_host: 192.168.123.3
+          ansible_port: 22
+          ansible_python_interpreter: /usr/bin/python3
+
+    workers:
+      hosts:
+        ubuntu-node04:
+          ansible_host: 192.168.123.4
+          ansible_port: 22
+          ansible_python_interpreter: /usr/bin/python3
+        ubuntu-node05:
+          ansible_host: 192.168.123.5
+          ansible_port: 22
+          ansible_python_interpreter: /usr/bin/python3

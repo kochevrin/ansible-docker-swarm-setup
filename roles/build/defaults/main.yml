@@ -1,0 +1,1 @@
+git_folder: /home/{{ remote_user }}/git_folder

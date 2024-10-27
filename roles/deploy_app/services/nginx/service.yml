@@ -1,0 +1,26 @@
+---
+- name: "Configure config for [{{ service_name }}]"
+  ansible.builtin.include_tasks: "../manage_config.yml"
+  loop:
+    - nginx.conf
+  loop_control:
+    loop_var: config_item
+
+- name: "Deploy service [{{ service_name }}]"
+  block:
+    - name: "Deploy [{{ service_name }}] service"
+      community.docker.docker_swarm_service:
+        name: "{{ service_name }}"
+        image: "nginx:{{ version }}"
+        state: present
+        networks:
+          - name: "{{ network_name }}"
+        publish:
+          - mode: ingress
+            protocol: tcp
+            published_port: 80
+            target_port: 80
+        configs:
+          - config_name: nginx.conf
+            filename: "/etc/nginx/"
+  tags: "{{ service_name }}"

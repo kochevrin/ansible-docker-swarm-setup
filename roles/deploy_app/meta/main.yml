@@ -1,0 +1,6 @@
+galaxy_info:
+  author: Konstantin Kochervrin
+  description: Deploying an application on a Docker Swarm cluster
+  company: KK Company
+  license: MIT
+  min_ansible_version: "2.9"

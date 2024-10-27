@@ -1,0 +1,40 @@
+---
+- name: "Get the current node ID"
+  ansible.builtin.command: "docker info -f '{{ '{{' }}.Swarm.NodeID{{ '}}' }}'"
+  register: node_id
+  changed_when: false
+
+- name: "Assign label 'registry=true' to the node"
+  ansible.builtin.command: "docker node update --label-add registry=true {{ node_id.stdout }}"
+  when: node_id.stdout is defined
+  changed_when: "'Updated' in node_id.stdout"
+
+- name: "Create Docker Registry directory"
+  ansible.builtin.file:
+    path: /opt/registry
+    state: directory
+    mode: '0755'
+
+- name: "Create Docker Registry service with constraint"
+  community.docker.docker_swarm_service:
+    name: registry
+    image: registry:latest
+    state: present
+    publish:
+      - mode: ingress
+        protocol: tcp
+        published_port: 5000
+        target_port: 5000
+    mounts:
+      - target: /var/lib/registry
+        source: /opt/registry
+        type: bind
+    restart_config:
+      condition: any
+    mode: replicated
+    replicas: 1
+    placement:
+      constraints:
+        - "node.labels.registry == true"
+    env:
+      REGISTRY_HTTP_ADDR: "0.0.0.0:5000"

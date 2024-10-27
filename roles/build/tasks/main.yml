@@ -1,0 +1,24 @@
+---
+- name: Cloninig repo
+  ansible.builtin.git:
+    repo: "{{ vault_git_repo }}"
+    dest: "{{ git_folder }}"
+    version: "{{ vault_git_version }}"
+
+- name: Assembing image
+  community.docker.docker_image:
+    name: "{{ registry_name }}{{ item.name }}"
+    tag: "{{ item.version }}"
+    push: true
+    force_source: true
+    force_tag: true
+    build:
+      path: "{{ git_folder }}"
+      dockerfile: "{{ git_folder }}/apps/{{ item.name }}/Dockerfile"
+    source: build
+  loop: "{{ services | difference(non_build_services) }}"
+
+- name: Remove repository
+  ansible.builtin.file:
+    state: absent
+    path: "{{ git_folder }}"

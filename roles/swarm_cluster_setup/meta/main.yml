@@ -1,0 +1,9 @@
+galaxy_info:
+  author: Konstantin Kochervrin
+  description: Initializing a SWARM Cluster
+  company: KK Company
+  license: MIT
+  min_ansible_version: "2.9"
+
+# dependencies:
+#   - role: install_docker

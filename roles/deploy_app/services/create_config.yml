@@ -1,0 +1,17 @@
+---
+- name: "Create config [{{ service_name }}]"
+  vars:
+    config_file: "{{ lookup('template', '{{ service_name }}/{{ config_item }}.j2') }}"
+  community.docker.docker_config:
+    name: "{{ config_item }}"
+    data: "{{ config_file | b64encode }}"
+    labels:
+      config: "{{ config_file | hash('sha1') }}"
+    data_is_b64: true
+    state: present
+
+# - name: "-------Service [{{ service_name }}] Debug-------"
+#   vars:
+#     config_file: "{{ lookup('template', '{{ service_name }}/{{ config_item }}.j2') }}"
+#   debug:
+#     msg: "{{ config_file }}"
